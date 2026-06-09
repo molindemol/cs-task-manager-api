@@ -1,4 +1,7 @@
 using Microsoft.OpenApi;
+using taskManagerApi.Models;
+using taskManagerApi.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +15,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Add services to the container.
+builder.Services.AddDbContext<TaskDb>(options =>
+    options.UseInMemoryDatabase("TaskDb"));
+builder.Services.AddScoped<TaskService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

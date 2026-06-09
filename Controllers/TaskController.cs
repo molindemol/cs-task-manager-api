@@ -6,18 +6,20 @@ namespace taskManagerApi.Controllers;
 [Route("[controller]")]
 public class TaskController: ControllerBase
 {
-    public TaskController()
+    private readonly TaskService _taskService;
+
+    public TaskController(TaskService taskService)
     {
-        
+        _taskService = taskService;
     }
 
     [HttpGet]
-    public ActionResult<List<Models.Task>> GetAll() => TaskService.GetAll();
+    public ActionResult<List<Models.Task>> GetAll() => _taskService.GetAll();
 
     [HttpGet("{id}")]
     public ActionResult<Models.Task> Get(int id)
     {
-        var task = TaskService.Get(id);
+        var task = _taskService.Get(id);
 
         if(task == null)
             return NotFound();
@@ -28,18 +30,18 @@ public class TaskController: ControllerBase
     [HttpPost]
     public IActionResult Create(Models.Task task)
     {            
-        TaskService.Add(task);
+        _taskService.Add(task);
         return CreatedAtAction(nameof(Get), new { id = task.Id }, task);
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(int id, Models.UpdateTaskDto taskUpdates)
     {
-        var existingtask = TaskService.Get(id);
+        var existingtask = _taskService.Get(id);
         if(existingtask is null)
             return NotFound();
     
-        TaskService.Update(existingtask, taskUpdates);           
+        _taskService.Update(existingtask, taskUpdates);           
     
         return NoContent();
     }
@@ -47,12 +49,12 @@ public class TaskController: ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        var task = TaskService.Get(id);
+        var task = _taskService.Get(id);
     
         if (task is null)
             return NotFound();
         
-        TaskService.Delete(id);
+        _taskService.Delete(id);
     
         return NoContent();
     }

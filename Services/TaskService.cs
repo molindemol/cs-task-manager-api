@@ -1,28 +1,32 @@
+using Microsoft.EntityFrameworkCore;
+using taskManagerApi.Models;
+
 namespace taskManagerApi.Services;
-public static class TaskService
+public class TaskService(TaskDb db)
 {
-    static List<Models.Task> Tasks {get;} = new List<Models.Task>();
-    static int nextId = 0;
+    private readonly TaskDb _db = db;
 
-    public static List<Models.Task> GetAll() => Tasks;
-    public static Models.Task? Get(int id) => Tasks.FirstOrDefault(p => p.Id == id);
+    public List<Models.Task> GetAll() => [.. _db.Tasks];
+    
+    public Models.Task? Get(int id) => _db.Tasks.FirstOrDefault(p => p.Id == id);
 
-    public static void Add(Models.Task Task)
+    public void Add(Models.Task task)
     {
-        Task.Id = nextId++;
-        Tasks.Add(Task);
+        _db.Tasks.Add(task);
+        _db.SaveChanges();
     }
 
-    public static void Delete(int id)
+    public void Delete(int id)
     {
-        var Task = Get(id);
-        if(Task is null)
+        var task = Get(id);
+        if(task is null)
             return;
 
-        Tasks.Remove(Task);
+        _db.Tasks.Remove(task);
+        _db.SaveChanges();
     }
 
-    public static void Update(Models.Task task, Models.UpdateTaskDto updates)
+    public void Update(Models.Task task, UpdateTaskDto updates)
     {
         if (updates.Title != null)
             task.Title = updates.Title;
@@ -33,11 +37,7 @@ public static class TaskService
         if (updates.Status != null)
             task.Status = updates.Status;
 
-
-        var index = Tasks.FindIndex(p => p.Id == task.Id);
-        if(index == -1)
-            return;
-
-        Tasks[index] = task;
+        _db.Tasks.Update(task);
+        _db.SaveChanges();
     }
 }

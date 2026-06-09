@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace taskManagerApi.Models;
 
 public class Task
@@ -13,4 +15,10 @@ public class UpdateTaskDto
     public string? Title {get; set;}
     public string? Description {get; set;}
     public string? Status {get; set;}
+}
+
+public class TaskDb : DbContext
+{
+    public TaskDb(DbContextOptions options) : base(options) { }
+    public DbSet<Task> Tasks { get; set; } = null!;
 }
