@@ -1,6 +1,56 @@
 @taskManagerApi_HostAddress = http://localhost:5033
+@contentType = application/json
 
-GET {{taskManagerApi_HostAddress}}/weatherforecast/
-Accept: application/json
+### Get all tasks
+GET {{taskManagerApi_HostAddress}}/task
+Accept: {{contentType}}
+
+###
+
+### Get task by ID
+GET {{taskManagerApi_HostAddress}}/task/1
+Accept: {{contentType}}
+
+###
+
+### Create a new task
+POST {{taskManagerApi_HostAddress}}/task
+Content-Type: {{contentType}}
+
+{
+  "title": "Learn C#",
+  "description": "Complete the task manager API project",
+  "status": "In Progress"
+}
+
+###
+
+### Create another task
+POST {{taskManagerApi_HostAddress}}/task
+Content-Type: {{contentType}}
+
+{
+  "title": "Test the API",
+  "description": "Test all endpoints with REST Client",
+  "status": "Open"
+}
+
+###
+
+### Update a task
+PUT {{taskManagerApi_HostAddress}}/task/1
+Content-Type: {{contentType}}
+
+{
+  "title": "Learn C#",
+  "description": "Complete the task manager API project",
+  "status": "Completed"
+}
+
+###
+
+### Delete a task
+DELETE {{taskManagerApi_HostAddress}}/task/1
+Accept: {{contentType}}
 
 ###
