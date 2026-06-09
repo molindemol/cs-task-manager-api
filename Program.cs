@@ -4,6 +4,8 @@ using taskManagerApi.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("Tasks") 
+    ?? throw new InvalidOperationException("Connection string 'Tasks' not found in configuration");
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -15,8 +17,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Add services to the container.
-builder.Services.AddDbContext<TaskDb>(options =>
-    options.UseInMemoryDatabase("TaskDb"));
+builder.Services.AddNpgsql<TaskDb>(connectionString);
 builder.Services.AddScoped<TaskService>();
 
 builder.Services.AddControllers();
