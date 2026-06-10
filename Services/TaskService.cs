@@ -6,9 +6,17 @@ public class TaskService(TaskDb db)
 {
     private readonly TaskDb _db = db;
 
-    public List<Models.Task> GetAll() => [.. _db.Tasks];
+    public List<TaskDto> GetAll()
+    {
+        var tasks = _db.Tasks.Include(t => t.Column).ToList();
+        return tasks.Select(t => MapTaskToDto(t)).ToList();
+    }
     
-    public Models.Task? Get(int id) => _db.Tasks.FirstOrDefault(p => p.Id == id);
+    public TaskDto? Get(int id)
+    {
+        var task = _db.Tasks.Include(t => t.Column).FirstOrDefault(p => p.Id == id);
+        return task == null ? null : MapTaskToDto(task);
+    }
 
     public void Add(Models.Task task)
     {
@@ -18,7 +26,7 @@ public class TaskService(TaskDb db)
 
     public void Delete(int id)
     {
-        var task = Get(id);
+        var task = _db.Tasks.FirstOrDefault(t => t.Id == id);
         if(task is null)
             return;
 
@@ -37,7 +45,22 @@ public class TaskService(TaskDb db)
         if (updates.Status != null)
             task.Status = updates.Status;
 
+        if (updates.ColumnId.HasValue)
+            task.ColumnId = updates.ColumnId.Value;
+
         _db.Tasks.Update(task);
         _db.SaveChanges();
+    }
+
+    private TaskDto MapTaskToDto(Models.Task task)
+    {
+        return new TaskDto
+        {
+            Id = task.Id,
+            Title = task.Title,
+            Description = task.Description,
+            Status = task.Status,
+            ColumnId = task.ColumnId
+        };
     }
 }

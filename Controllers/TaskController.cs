@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using taskManagerApi.Services;
+using taskManagerApi.Models;
 
 namespace taskManagerApi.Controllers;
 [ApiController]
@@ -14,10 +15,10 @@ public class TaskController: ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<Models.Task>> GetAll() => _taskService.GetAll();
+    public ActionResult<List<TaskDto>> GetAll() => _taskService.GetAll();
 
     [HttpGet("{id}")]
-    public ActionResult<Models.Task> Get(int id)
+    public ActionResult<TaskDto> Get(int id)
     {
         var task = _taskService.Get(id);
 
@@ -31,17 +32,18 @@ public class TaskController: ControllerBase
     public IActionResult Create(Models.Task task)
     {            
         _taskService.Add(task);
-        return CreatedAtAction(nameof(Get), new { id = task.Id }, task);
+        return CreatedAtAction(nameof(Get), new { id = task.Id }, _taskService.Get(task.Id));
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, Models.UpdateTaskDto taskUpdates)
+    public IActionResult Update(int id, UpdateTaskDto taskUpdates)
     {
         var existingtask = _taskService.Get(id);
         if(existingtask is null)
             return NotFound();
-    
-        _taskService.Update(existingtask, taskUpdates);           
+
+        var task = new Models.Task { Id = id };
+        _taskService.Update(task, taskUpdates);           
     
         return NoContent();
     }

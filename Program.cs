@@ -19,6 +19,8 @@ builder.Services.AddSwaggerGen(c =>
 // Add services to the container.
 builder.Services.AddNpgsql<TaskDb>(connectionString);
 builder.Services.AddScoped<TaskService>();
+builder.Services.AddScoped<BoardService>();
+builder.Services.AddScoped<ColumnService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
