@@ -12,6 +12,9 @@ This project demonstrates:
 - Database migrations
 - Swagger/OpenAPI documentation
 - CRUD operations
+- Entity relationships (one-to-many)
+- Data Transfer Objects (DTOs) to prevent circular references
+- API response mapping and transformation
 
 ## Tech Stack
 
@@ -72,7 +75,28 @@ Examples:
 
 ## API Endpoints
 
-All endpoints use the `/task` base route.
+### Board Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/board` | Get all boards |
+| GET | `/board/{id}` | Get a specific board with columns and tasks |
+| POST | `/board` | Create a new board |
+| PUT | `/board/{id}` | Update a board |
+| DELETE | `/board/{id}` | Delete a board |
+
+### Column Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/column` | Get all columns |
+| GET | `/column/{id}` | Get a specific column with tasks |
+| GET | `/column/board/{boardId}` | Get all columns for a specific board |
+| POST | `/column` | Create a new column |
+| PUT | `/column/{id}` | Update a column |
+| DELETE | `/column/{id}` | Delete a column |
+
+### Task Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -82,52 +106,115 @@ All endpoints use the `/task` base route.
 | PUT | `/task/{id}` | Update an existing task |
 | DELETE | `/task/{id}` | Delete a task |
 
-### Example Request
+### Example Requests
 
+Create a Board:
+```json
+POST /board
+{
+  "name": "My Project",
+  "description": "Project board for organizing tasks"
+}
+```
+
+Create a Column:
+```json
+POST /column
+{
+  "name": "To Do",
+  "position": 0,
+  "boardId": 1
+}
+```
+
+Create a Task:
 ```json
 POST /task
 {
   "title": "Learn C#",
   "description": "Complete the task manager API project",
-  "status": "In Progress"
+  "status": "In Progress",
+  "columnId": 1
 }
 ```
 
-### Task Model
+### Data Models
 
+**Board:**
+```json
+{
+  "id": 1,
+  "name": "string",
+  "description": "string",
+  "createdAt": "datetime",
+  "columns": [...]
+}
+```
+
+**Column:**
+```json
+{
+  "id": 1,
+  "name": "string",
+  "position": 0,
+  "boardId": 1,
+  "tasks": [...]
+}
+```
+
+**Task:**
 ```json
 {
   "id": 1,
   "title": "string",
   "description": "string",
-  "status": "string"
+  "status": "string",
+  "columnId": 1
 }
 ```
+
+## Data Model Relationships
+
+The API implements a hierarchical structure:
+
+- Each **Board** can contain multiple **Columns**
+- Each **Column** can contain multiple **Tasks**
+- Tasks are organized within columns for better workflow management
+- Columns have a **Position** property to maintain ordering on the board
 
 ## Project Structure
 
 ```
 taskManagerApi/
-├── Controllers/       # API endpoints
-│   └── TaskController.cs
-├── Models/           # Data models and DTOs
-│   └── Task.cs
-├── Services/         # Business logic
-│   └── TaskService.cs
-├── Migrations/       # Database migrations
-├── Properties/       # Launch settings
-├── Program.cs        # Application entry point
+├── Controllers/              # API endpoints
+│   ├── TaskController.cs
+│   ├── BoardController.cs
+│   └── ColumnController.cs
+├── Models/                   # Data models and DTOs
+│   ├── Task.cs
+│   ├── Board.cs
+│   ├── Column.cs
+│   └── DTOs.cs
+├── Services/                 # Business logic
+│   ├── TaskService.cs
+│   ├── BoardService.cs
+│   └── ColumnService.cs
+├── Migrations/               # Database migrations
+├── Properties/               # Launch settings
+├── Program.cs                # Application entry point
 ├── taskManagerApi.csproj
 └── README.md
 ```
 
 ## Key Concepts Covered
 
-- **Dependency Injection**: TaskService injected into controller
-- **Entity Framework Core**: DbContext setup for database operations
-- **Data Transfer Objects (DTOs)**: UpdateTaskDto for update operations
+- **Dependency Injection**: Services injected into controllers
+- **Entity Framework Core**: DbContext setup with relationships
+- **Data Transfer Objects (DTOs)**: Separating API responses from database models to prevent circular references
+- **Entity Relationships**: One-to-many relationships (Board → Columns → Tasks)
 - **RESTful API**: Standard HTTP methods for CRUD operations
 - **Swagger Integration**: Auto-generated API documentation
+- **Database Migrations**: Managing schema changes with EF Core
 
 ## Development
 
