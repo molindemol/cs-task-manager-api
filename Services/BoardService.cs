@@ -10,7 +10,7 @@ public class BoardService(TaskDb db)
     public List<BoardDto> GetAll()
     {
         var boards = _db.Boards.Include(b => b.Columns).ThenInclude(c => c.Tasks).ToList();
-        return boards.Select(b => MapBoardToDto(b)).ToList();
+        return boards.Select(b => MapBoardToDto(b)).OrderByDescending(b => b.CreatedAt).ToList();
     }
     
     public BoardDto? Get(int id)
