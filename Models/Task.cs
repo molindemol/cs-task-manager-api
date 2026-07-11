@@ -8,9 +8,10 @@ public class Task
     public string? Title {get; set;}
     public string? Description {get; set;}
     public string? Status {get; set;}
-    
+    public int Position { get; set; }
+
     public int? ColumnId { get; set; }
-    
+
     public Column? Column { get; set; }
 }
 
@@ -19,6 +20,7 @@ public class UpdateTaskDto
     public string? Title {get; set;}
     public string? Description {get; set;}
     public string? Status {get; set;}
+    public int? Position { get; set; }
     public int? ColumnId { get; set; }
 }
 

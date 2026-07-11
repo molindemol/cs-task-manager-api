@@ -35,15 +35,18 @@ public class BoardService(TaskDb db)
         _db.SaveChanges();
     }
 
-    public void Update(Board board, UpdateBoardDto updates)
+    public void Update(int id, UpdateBoardDto updates)
     {
+        var board = _db.Boards.FirstOrDefault(b => b.Id == id);
+        if (board is null)
+            return;
+
         if (updates.Name != null)
             board.Name = updates.Name;
 
         if (updates.Description != null)
             board.Description = updates.Description;
 
-        _db.Boards.Update(board);
         _db.SaveChanges();
     }
 
@@ -61,12 +64,13 @@ public class BoardService(TaskDb db)
                 Name = c.Name,
                 Position = c.Position,
                 BoardId = c.BoardId,
-                Tasks = c.Tasks.Select(t => new TaskDto
+                Tasks = c.Tasks.OrderBy(t => t.Position).Select(t => new TaskDto
                 {
                     Id = t.Id,
                     Title = t.Title,
                     Description = t.Description,
                     Status = t.Status,
+                    Position = t.Position,
                     ColumnId = t.ColumnId
                 }).ToList()
             }).ToList()

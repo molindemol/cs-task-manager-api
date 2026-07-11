@@ -42,9 +42,8 @@ public class TaskController: ControllerBase
         if(existingtask is null)
             return NotFound();
 
-        var task = new Models.Task { Id = id };
-        _taskService.Update(task, taskUpdates);           
-    
+        _taskService.Update(id, taskUpdates);
+
         return NoContent();
     }
 

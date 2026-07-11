@@ -41,15 +41,18 @@ public class ColumnService(TaskDb db)
         _db.SaveChanges();
     }
 
-    public void Update(Column column, UpdateColumnDto updates)
+    public void Update(int id, UpdateColumnDto updates)
     {
+        var column = _db.Columns.FirstOrDefault(c => c.Id == id);
+        if (column is null)
+            return;
+
         if (updates.Name != null)
             column.Name = updates.Name;
 
         if (updates.Position.HasValue)
             column.Position = updates.Position.Value;
 
-        _db.Columns.Update(column);
         _db.SaveChanges();
     }
 
@@ -61,12 +64,13 @@ public class ColumnService(TaskDb db)
             Name = column.Name,
             Position = column.Position,
             BoardId = column.BoardId,
-            Tasks = column.Tasks.Select(t => new TaskDto
+            Tasks = column.Tasks.OrderBy(t => t.Position).Select(t => new TaskDto
             {
                 Id = t.Id,
                 Title = t.Title,
                 Description = t.Description,
                 Status = t.Status,
+                Position = t.Position,
                 ColumnId = t.ColumnId
             }).ToList()
         };

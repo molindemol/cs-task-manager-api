@@ -48,9 +48,8 @@ public class BoardController : ControllerBase
         if(existingBoard is null)
             return NotFound();
 
-        var board = new Board { Id = id };
-        _boardService.Update(board, boardUpdates);           
-    
+        _boardService.Update(id, boardUpdates);
+
         return NoContent();
     }
 

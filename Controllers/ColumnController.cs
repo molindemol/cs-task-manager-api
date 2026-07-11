@@ -56,9 +56,8 @@ public class ColumnController : ControllerBase
         if(existingColumn is null)
             return NotFound();
 
-        var column = new Column { Id = id };
-        _columnService.Update(column, columnUpdates);           
-    
+        _columnService.Update(id, columnUpdates);
+
         return NoContent();
     }
 

@@ -34,8 +34,12 @@ public class TaskService(TaskDb db)
         _db.SaveChanges();
     }
 
-    public void Update(Models.Task task, UpdateTaskDto updates)
+    public void Update(int id, UpdateTaskDto updates)
     {
+        var task = _db.Tasks.FirstOrDefault(t => t.Id == id);
+        if (task is null)
+            return;
+
         if (updates.Title != null)
             task.Title = updates.Title;
 
@@ -45,10 +49,12 @@ public class TaskService(TaskDb db)
         if (updates.Status != null)
             task.Status = updates.Status;
 
+        if (updates.Position.HasValue)
+            task.Position = updates.Position.Value;
+
         if (updates.ColumnId.HasValue)
             task.ColumnId = updates.ColumnId.Value;
 
-        _db.Tasks.Update(task);
         _db.SaveChanges();
     }
 
@@ -60,6 +66,7 @@ public class TaskService(TaskDb db)
             Title = task.Title,
             Description = task.Description,
             Status = task.Status,
+            Position = task.Position,
             ColumnId = task.ColumnId
         };
     }
